@@ -1,0 +1,32 @@
+{
+  "name": "Blog_MERN",
+  "version": "1.0.0",
+  "description": "Blog_MERN",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/parkjaeseo203/Blog_MERN.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/parkjaeseo203/Blog_MERN/issues"
+  },
+  "homepage": "https://github.com/parkjaeseo203/Blog_MERN#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.10.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
