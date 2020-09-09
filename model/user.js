@@ -1,6 +1,7 @@
 
 const mongoose = require('mongoose')
 
+
 const userSchema = mongoose.Schema(
     {
         name:{
@@ -16,8 +17,7 @@ const userSchema = mongoose.Schema(
             required: true
         },
         avatar:{
-            type: String,
-            required: true
+            type: String
         },
         role:{
             type: String,
