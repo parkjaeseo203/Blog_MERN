@@ -1,6 +1,6 @@
 
 const express = require('express')
-// const BP = require('body-parser')
+const BP = require('body-parser')
 const morgan = require('morgan')
 // const bcrypt = require('bcryptjs')
 // const jwt = require('jsonwebtoken')
@@ -22,6 +22,8 @@ mongoose
 
 
 app.use(morgan('dev'))
+app.use(BP.json())
+app.use(BP.urlencoded({ extended: false}))
 
 
 
