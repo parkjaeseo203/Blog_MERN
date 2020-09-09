@@ -4,30 +4,21 @@ const BP = require('body-parser')
 const morgan = require('morgan')
 // const bcrypt = require('bcryptjs')
 // const jwt = require('jsonwebtoken')
-const mongoose = require('mongoose')
 const app = express()
 
+const userRoute = require('./routes/user')
 
-const dbAdress = "mongodb+srv://bangnany:4275@cluster0.b5xqd.mongodb.net/Blog_MERN?retryWrites=true&w=majority"
-const dbOption = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}
-
-mongoose
-    .connect(dbAdress, dbOption)
-    .then(() => console.log('MongDB connected'))
-    .catch(err => console.log(err))
-
+require('./config/db')
 
 
 app.use(morgan('dev'))
 app.use(BP.json())
 app.use(BP.urlencoded({ extended: false}))
 
+app.use('/user', userRoute)
 
 
 const port = 7524
 
 
-app.listen(port, console.log('server started'))
+app.listen(port, () => console.log(`server started at ${port}`))
