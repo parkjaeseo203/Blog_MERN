@@ -48,7 +48,7 @@ router.post('/register', (req, res) => {
                             .save()
                             .then(user => {
                                 res.json({
-                                    message: 'HI',
+                                    message: 'WELCOME',
                                     userInfo: user
                                 })
                             })
@@ -83,6 +83,53 @@ router.post('/register', (req, res) => {
 // @desc login user / return jwt
 // @access public
 router.post('/login', (req, res) => {
+
+    // email check -> password 암호화 -> 데이터 저장
+    const {email, password} = req.body
+
+    userModel
+        .findOne({email, password})
+        .then(user => {
+            if (user) {
+                res.json({
+                    message: 'Already email exsists or password was wrong'
+                })
+            }
+            else {
+                bcrypt.hash(password, 10, (err, hash) => {
+
+                    if (err) {
+                        return res.json({
+                            message: err.message
+                        })
+                    }
+                    else {
+                        userModel
+                            .save()
+                            .then(user => {
+                                res.json({
+                                    message: err.json,
+                                    userInfo: user
+                                })
+                            })
+                            .catch(err => {
+                                res.json({
+                                    message: err.message
+                                })
+                            })
+
+                    }
+                })
+
+
+            }
+        })
+        .catch(err => {
+            res.json({
+                message: err.message
+            })
+        })
+
 
 })
 
