@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/parkjaeseo203/Blog_MERN#readme",
   "dependencies": {
+    "@sendgrid/mail": "^7.2.6",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",

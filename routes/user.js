@@ -2,6 +2,8 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey("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")
 
 const userModel = require('../model/user')
 
@@ -10,11 +12,8 @@ const userModel = require('../model/user')
 // @desc register user
 // @access public
 router.post('/register', (req, res) => {
-
-
     // email check -> password 암호화 -> 데이터 저장
     const {name, email, password} = req.body
-
 
     userModel
         .findOne({email})
@@ -25,23 +24,58 @@ router.post('/register', (req, res) => {
                 })
             }
             else {
-                const newUser = new userModel({
-                    email, name, password
-                })
 
-                newUser
-                    .save()
-                    .then(user => {
+                // 사용자 입력값을 기반해서 토큰생성
+
+                const payload = {email, name, password}
+                const token = jwt.sign(
+                    payload,
+                    "jwt_acount_key",
+                    { expiresIn: '20m'}
+                )
+
+                const emailDate = {
+                    from: "joke716@gmail.com",
+                    to: email,
+                    subject: 'Account activation link',
+                    html: `
+                        <h1>Please use the following to activate your account</h1>
+                        <p>${token}</p>
+                        <hr />
+                    `
+                }
+                sgMail
+                    .send(emailDate)
+                    .then(() => {
                         res.json({
-                            message: 'WELCOME',
-                            userInfo: user
+                            message: `email has been sent to ${email}`
                         })
                     })
                     .catch(err => {
                         res.json({
-                            message: err.message
+                            meessage: err.message
                         })
                     })
+
+                // const newUser = new userModel({
+                //     email, name, password
+                // })
+
+
+
+                // newUser
+                //     .save()
+                //     .then(user => {
+                //         res.json({
+                //             message: 'WELCOME',
+                //             userInfo: user
+                //         })
+                //     })
+                //     .catch(err => {
+                //         res.json({
+                //             message: err.message
+                //         })
+                //     })
             }
         })
         .catch(err => {
@@ -89,7 +123,7 @@ router.post('/login', (req, res) => {
                                 'key',
                                 {expiresIn: '1d'}
                             )
-                            // token return
+           ``                 // token return
                             res.json({
                                 message: 'auth successful',
                                 isMatch,
