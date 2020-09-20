@@ -1,10 +1,7 @@
 
 const express = require('express')
 const router = express.Router()
-const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const gravatar = require('gravatar')
-const normalize = require('normalize-url')
 
 const userModel = require('../model/user')
 
@@ -28,54 +25,23 @@ router.post('/register', (req, res) => {
                 })
             }
             else {
+                const newUser = new userModel({
+                    email, name, password
+                })
 
-
-                bcrypt.hash(password, 10, (err, hash) => {
-
-                    if (err) {
-                        return res.json({
+                newUser
+                    .save()
+                    .then(user => {
+                        res.json({
+                            message: 'WELCOME',
+                            userInfo: user
+                        })
+                    })
+                    .catch(err => {
+                        res.json({
                             message: err.message
                         })
-                    }
-
-                    else {
-
-                        // make a avatar
-                        const avatar = normalize(
-                            gravatar.url(email, {
-                                s: '200',
-                                r: 'pg',
-                                d: 'mm'
-                            }),
-                            { forceHttps: true }
-                        )
-
-
-                        const newUser = new userModel({
-                            name,
-                            email,
-                            password: hash,
-                            avatar
-                        })
-
-                        newUser
-                            .save()
-                            .then(user => {
-                                res.json({
-                                    message: 'WELCOME',
-                                    userInfo: user
-                                })
-                            })
-                            .catch(err => {
-                                res.json({
-                                    message: err.message
-                                })
-                            })
-
-
-                    }
-
-                })
+                    })
             }
         })
         .catch(err => {
@@ -83,11 +49,6 @@ router.post('/register', (req, res) => {
                 message: err.message
             })
         })
-
-
-
-
-
 
 })
 
@@ -112,30 +73,43 @@ router.post('/login', (req, res) => {
             }
             else {
                 // password matching
-                bcrypt.compare(password, user.password, (err, result) => {
+                user
+                    .comparePassword(password, (err, isMatch) => {
+                        if (err || !isMatch) {
+                            return res.json ({
+                                message: 'wrong password'
+                            })
+                        }
+                        else {
+                            const token = jwt.sign(
+                                {
+                                    email: user.email,
+                                    id: user._id
+                                },
+                                'key',
+                                {expiresIn: '1d'}
+                            )
+                            // token return
+                            res.json({
+                                message: 'auth successful',
+                                isMatch,
+                                token: token
+                            })
+                        }
+                    })
 
-                    if (err || result === false) {
-                        return res.json({
-                            message: 'wrong password'
-                        })
-                    }
-                    else {
-                        // make a token
-                        const token = jwt.sign(
-                            {
-                                email: user.email,
-                                id: user._id
-                            },
-                            'key',
-                            {expiresIn: '1d'}
-                        )
-                        // token return
-                        res.json({
-                            message: 'auth successful',
-                            token: token
-                        })
-                    }
-                })
+                // bcrypt.compare(password, user.password, (err, result) => {
+                //
+                //     if (err || result === false) {
+                //         return res.json({
+                //             message: 'wrong password'
+                //         })
+                //     }
+                //     else {
+                //         // make a token
+
+                //     }
+                // })
             }
 
         })
