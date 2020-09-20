@@ -3,6 +3,8 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const gravatar = require('gravatar')
+const normalize = require('normalize-url')
 
 const userModel = require('../model/user')
 
@@ -38,11 +40,22 @@ router.post('/register', (req, res) => {
 
                     else {
 
+                        // make a avatar
+                        const avatar = normalize(
+                            gravatar.url(email, {
+                                s: '200',
+                                r: 'pg',
+                                d: 'mm'
+                            }),
+                            { forceHttps: true }
+                        )
+
 
                         const newUser = new userModel({
                             name,
                             email,
-                            password: hash
+                            password: hash,
+                            avatar
                         })
 
                         newUser
@@ -131,18 +144,6 @@ router.post('/login', (req, res) => {
                 message: err.message
             })
         })
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
