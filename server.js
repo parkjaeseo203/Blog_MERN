@@ -9,6 +9,7 @@ const passport = require('passport')
 const app = express()
 
 const userRoute = require('./routes/user')
+const profileRoute = require('./routes/profile')
 
 require('./config/db')
 
@@ -19,12 +20,14 @@ app.use(BP.urlencoded({ extended: false}))
 
 app.use(passport.initialize())
 
+
 require('./config/passport')(passport)
 
 
 
 
 app.use('/user', userRoute)
+app.use('/profile', profileRoute)
 
 
 const port = 7524
