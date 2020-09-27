@@ -33,9 +33,21 @@ router.post('/register', authCheck, (req, res) => {
         .findOne({user: req.user.id})
         .then(profile => {
             if (profile) {
-                return res.json({
-                    message: 'already registed profile'
-                })
+                // return res.json({
+                //     message: 'already registed profile'
+                // })
+                profileModel
+                    .findOneAndUpdate(
+                        { user: req.user.id },
+                        {$set: profileFields },
+                        {new: true}
+                    )
+                    .then(profile => res.json(profile))
+                    .catch(err => {
+                        res.json({
+                            message: err.message
+                        })
+                    })
             }
             else {
                 new profileModel(profileFields)
