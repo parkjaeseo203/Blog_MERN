@@ -29,19 +29,37 @@ router.post('/register', authCheck, (req, res) => {
         profileFields.skills = req.body.skills.split(',')
     }
 
-    new profileModel(profileFields)
-        .save()
+    profileModel
+        .findOne({user: req.user.id})
         .then(profile => {
-            res.json({
-                message: 'Completed',
-                profileInfo: profile
-            })
+            if (profile) {
+                return res.json({
+                    message: 'already registed profile'
+                })
+            }
+            else {
+                new profileModel(profileFields)
+                    .save()
+                    .then(profile => {
+                        res.json({
+                            message: 'Completed',
+                            profileInfo: profile
+                        })
+                    })
+                    .catch(err => {
+                        res.json({
+                            message: err.message
+                        })
+                    })
+            }
         })
         .catch(err => {
             res.json({
                 message: err.message
             })
         })
+
+
     // const {user, handle, company, website, location, status, bio, skills, githubusername, experience, education, social} = req.body
     //
     // const newProfile = new profileModel({
