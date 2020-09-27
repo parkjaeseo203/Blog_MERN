@@ -110,6 +110,7 @@ router.get('/', authCheck, (req, res) => {
 
     profileModel
         .findOne({user: req.user.id})
+        .populate('user', ['name', 'email'])
         .then(profile => {
             res.json({
                 message: 'completed get the profile',
