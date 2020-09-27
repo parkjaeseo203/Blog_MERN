@@ -8,7 +8,7 @@ const authCheck = passport.authenticate('jwt', {session: false})
 const profileModel = require('../model/profile')
 
 // profile register
-// @route GET http://localhost:7524/profile/register
+// @route Post http://localhost:7524/profile/register
 // @desc post profile
 // @access private
 
@@ -78,6 +78,27 @@ router.post('/register', authCheck, (req, res) => {
     //             message: err.message
     //         })
     //     })
+})
+
+
+// profile deleted
+// @route delete http://localhost:7524/profile
+// @desc delete profile
+// @access private
+router.delete('/', authCheck, (req, res) => {
+
+    profileModel
+        .findOneAndDelete({user: req.user.id})
+        .then(() => {
+            res.json({
+                message: 'Deleted'
+            })
+        })
+        .catch(err => {
+            res.json({
+                message: err.message
+            })
+        })
 })
 
 
