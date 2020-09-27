@@ -2,8 +2,9 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey("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")
+const passport = require('passport')
+
+const authCheck = passport.authenticate('jwt', {session: false})
 
 const userModel = require('../model/user')
 
@@ -27,48 +28,28 @@ router.post('/register', (req, res) => {
 
                 // 사용자 입력값을 기반해서 토큰생성
 
-                const payload = {email, name, password}
-                const token = jwt.sign(
-                    payload,
-                    "jwt_acount_key",
-                    { expiresIn: '20m'}
-                )
-
-                const emailDate = {
-                    from: "joke716@gmail.com",
-                    to: email,
-                    subject: 'Account activation link',
-                    html: `
-                        <h1>Please use the following to activate your account</h1>
-                        <p>${token}</p>
-                        <hr />
-                    `
-                }
-                sgMail
-                    .send(emailDate)
-                    .then(() => {
-                        res.json({
-                            message: `email has been sent to ${email}`
-                        })
-                    })
-                    .catch(err => {
-                        res.json({
-                            meessage: err.message
-                        })
-                    })
-
-                // const newUser = new userModel({
-                //     email, name, password
-                // })
-
-
-
-                // newUser
-                //     .save()
-                //     .then(user => {
+                // const payload = {email, name, password}
+                // const token = jwt.sign(
+                //     payload,
+                //     "jwt_account_key",
+                //     { expiresIn: '20m'}
+                // )
+                //
+                // const emailDate = {
+                //     from: "joke716@gmail.com",
+                //     to: email,
+                //     subject: 'Account activation link',
+                //     html: `
+                //         <h1>Please use the following to activate your account</h1>
+                //         <p>${token}</p>
+                //         <hr />
+                //     `
+                // }
+                // sgMail
+                //     .send(emailDate)
+                //     .then(() => {
                 //         res.json({
-                //             message: 'WELCOME',
-                //             userInfo: user
+                //             message: `email has been sent to ${email}`
                 //         })
                 //     })
                 //     .catch(err => {
@@ -76,6 +57,26 @@ router.post('/register', (req, res) => {
                 //             message: err.message
                 //         })
                 //     })
+
+                const newUser = new userModel({
+                    email, name, password
+                })
+
+
+
+                newUser
+                    .save()
+                    .then(user => {
+                        res.json({
+                            message: 'WELCOME',
+                            userInfo: user
+                        })
+                    })
+                    .catch(err => {
+                        res.json({
+                            message: err.message
+                        })
+                    })
             }
         })
         .catch(err => {
@@ -115,6 +116,8 @@ router.post('/login', (req, res) => {
                             })
                         }
                         else {
+                            console.log(isMatch)
+
                             const token = jwt.sign(
                                 {
                                     email: user.email,
@@ -123,7 +126,8 @@ router.post('/login', (req, res) => {
                                 'key',
                                 {expiresIn: '1d'}
                             )
-           ``                 // token return
+
+                            // token return
                             res.json({
                                 message: 'auth successful',
                                 isMatch,
@@ -193,6 +197,12 @@ router.post('/login', (req, res) => {
 
 
 // 현유저정보
-
+//
+// @route GET http://localhost:7524/user/current
+// @desc get current user
+// @access private
+router.get('/current', authCheck, (req, res) => {
+    res.json(req.user)
+})
 
 module.exports = router
