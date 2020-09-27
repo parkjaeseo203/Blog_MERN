@@ -101,9 +101,27 @@ router.delete('/', authCheck, (req, res) => {
         })
 })
 
+// profile get
+// @route get http://localhost:7524/profile
+// @desc get profile
+// @access private
 
+router.get('/', authCheck, (req, res) => {
 
-
+    profileModel
+        .findOne({user: req.user.id})
+        .then(profile => {
+            res.json({
+                message: 'completed get the profile',
+                profileInfo: profile
+            })
+        })
+        .catch(err => {
+            res.json({
+                message: err.message
+            })
+        })
+})
 
 
 
